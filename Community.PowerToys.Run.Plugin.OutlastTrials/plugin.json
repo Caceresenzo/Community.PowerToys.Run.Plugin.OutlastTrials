@@ -1,0 +1,14 @@
+{
+  "ID": "A91B923FD7F44BD49A0B045B0967D6E4",
+  "ActionKeyword": "outlast",
+  "IsGlobal": false,
+  "Name": "Outlast Trials Utilities",
+  "Author": "Enzo CACERES",
+  "Version": "0.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Caceresenzo/Community.PowerToys.Run.Plugin.OutlastTrials",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.OutlastTrials.dll",
+  "IcoPathDark": "Images\\outlasttrials.dark.png",
+  "IcoPathLight": "Images\\outlasttrials.light.png",
+  "DynamicLoading": false
+}
