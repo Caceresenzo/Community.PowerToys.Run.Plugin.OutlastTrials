@@ -15,18 +15,21 @@ public class OverlayManager : IDisposable
 
     private readonly object _lock = new();
 
-    private readonly TimeSpan _playTime;
-    private readonly TimeSpan _hideTime;
+    private readonly int _playingTime;
+    private readonly int _hidingTime;
 
     private int _remainingSeconds;
     private ShockPhase _shockPhase;
 
-    public OverlayManager(TimeSpan playTime, TimeSpan hideTime)
-    {
-        _playTime = playTime;
-        _hideTime = hideTime;
+    public OverlayManager(ShockDefinition shock)
+        : this(shock.PlayingTime, shock.HidingTime) { }
 
-        _remainingSeconds = (int)_playTime.TotalSeconds;
+    public OverlayManager(int playingTime, int hidingTime)
+    {
+        _playingTime = playingTime;
+        _hidingTime = hidingTime;
+
+        _remainingSeconds = _playingTime;
         _shockPhase = ShockPhase.Playing;
 
         _countDownThread = new Thread(() =>
@@ -61,11 +64,8 @@ public class OverlayManager : IDisposable
                     _shockPhase =
                         _shockPhase == ShockPhase.Playing ? ShockPhase.Hiding : ShockPhase.Playing;
 
-                    _remainingSeconds = (int)(
-                        _shockPhase == ShockPhase.Playing
-                            ? _playTime.TotalSeconds
-                            : _hideTime.TotalSeconds
-                    );
+                    _remainingSeconds =
+                        _shockPhase == ShockPhase.Playing ? _playingTime : _hidingTime;
                 }
 
                 Update();
@@ -146,9 +146,9 @@ public class OverlayManager : IDisposable
         NotifyStop();
 
         if (phase == ShockPhase.Playing)
-            _remainingSeconds = (int)_playTime.TotalSeconds;
+            _remainingSeconds = _playingTime;
         else
-            _remainingSeconds = (int)_hideTime.TotalSeconds;
+            _remainingSeconds = _hidingTime;
 
         _shockPhase = phase;
 

@@ -136,54 +136,31 @@ public class Main : IPlugin, IContextMenu, IDisposable
                 ]);
             }
 
-            results.AddRange([
-                new Result
-                {
-                    DisableUsageBasedScoring = true,
-                    QueryTextDisplay = "shock start cold",
-                    IcoPath = "Images/cold-snap.png",
-                    Title = "Cold Snap",
-                    SubTitle = "Play for 1m30s, hide for 30s",
-                    Action = _ =>
+            foreach (var shock in new[] { ShockDefinition.Toxic, ShockDefinition.Cold })
+            {
+                results.Add(
+                    new Result
                     {
-                        _currentOverlayManager?.Dispose();
+                        DisableUsageBasedScoring = true,
+                        QueryTextDisplay = $"shock start {shock.Name}",
+                        IcoPath = shock.IconPath,
+                        Title = shock.DisplayName,
+                        SubTitle =
+                            $"Play for {shock.PlayingTime / 60}m{shock.PlayingTime % 60}s, hide for {shock.HidingTime}s",
+                        Action = _ =>
+                        {
+                            _currentOverlayManager?.Dispose();
 
-                        _currentOverlayManager = new OverlayManager(
-                            TimeSpan.FromSeconds(90),
-                            TimeSpan.FromSeconds(30)
-                        );
+                            _currentOverlayManager = new OverlayManager(shock);
+                            _currentOverlayManager.Show();
 
-                        _currentOverlayManager.Show();
+                            Context.API.ChangeQuery(query.RawQuery, true);
 
-                        Context.API.ChangeQuery(query.RawQuery, true);
-
-                        return true;
-                    },
-                },
-                new Result
-                {
-                    DisableUsageBasedScoring = true,
-                    QueryTextDisplay = "shock start toxic",
-                    IcoPath = "Images/toxic-shock.png",
-                    Title = "Toxic Shock",
-                    SubTitle = "Play for 2m, hide for 30s",
-                    Action = _ =>
-                    {
-                        _currentOverlayManager?.Dispose();
-
-                        _currentOverlayManager = new OverlayManager(
-                            TimeSpan.FromMinutes(2),
-                            TimeSpan.FromSeconds(30)
-                        );
-
-                        _currentOverlayManager.Show();
-
-                        Context.API.ChangeQuery(query.RawQuery, true);
-
-                        return true;
-                    },
-                },
-            ]);
+                            return true;
+                        },
+                    }
+                );
+            }
 
             return results;
         }
