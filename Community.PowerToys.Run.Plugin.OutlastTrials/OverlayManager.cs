@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -31,31 +32,34 @@ public class OverlayManager : IDisposable
 
         _remainingSeconds = _playingTime;
         _shockPhase = ShockPhase.Playing;
-
         _countDownThread = new Thread(() =>
         {
-            int resolution = 4;
-            int waitTime = 1000 / resolution;
+            var nextTick = Stopwatch.GetTimestamp();
+            var ticksPerSecond = Stopwatch.Frequency;
 
             while (!_disposed)
             {
-                lock (_lock)
+                nextTick += ticksPerSecond;
+
+                long now = Stopwatch.GetTimestamp();
+                long waitTicks = nextTick - now;
+
+                if (waitTicks > 0)
                 {
-                    bool signaled = false;
+                    int waitMilliseconds = (int)(waitTicks * 1000 / ticksPerSecond);
 
-                    for (int loop = 0; loop < resolution; loop++)
+                    if (waitMilliseconds > 0)
                     {
-                        signaled = Monitor.Wait(_lock, waitTime);
-                        if (signaled)
-                            break;
-
-                        if (_disposed)
-                            return;
+                        lock (_lock)
+                        {
+                            if (Monitor.Wait(_lock, waitMilliseconds))
+                                continue;
+                        }
                     }
-
-                    if (signaled)
-                        continue;
                 }
+
+                if (_disposed)
+                    return;
 
                 _remainingSeconds--;
 
