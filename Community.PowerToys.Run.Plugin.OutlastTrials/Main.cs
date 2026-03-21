@@ -61,13 +61,13 @@ public class Main : IPlugin, IContextMenu, IDisposable
                 },
                 new Result
                 {
-                    QueryTextDisplay = "calc ",
+                    QueryTextDisplay = "pump ",
                     IcoPath = IconPath,
-                    Title = "Calculator",
-                    SubTitle = "Calculator for Kress's Pumps",
+                    Title = "Pumps Puzzle",
+                    SubTitle = "Calculator \"Kill the Politician\" Trials's Pumps Puzzle",
                     Action = _ =>
                     {
-                        Context.API.ChangeQuery($"{query.ActionKeyword} calc ", true);
+                        Context.API.ChangeQuery($"{query.ActionKeyword} pump ", true);
                         return false;
                     },
                     ContextData = search,
@@ -165,20 +165,86 @@ public class Main : IPlugin, IContextMenu, IDisposable
             return results;
         }
 
-        if (search.StartsWith("calc"))
+        if (search.StartsWith("pump"))
         {
-            return
+            List<Result> results =
             [
                 new Result
                 {
-                    QueryTextDisplay = "calc ",
+                    DisableUsageBasedScoring = true,
+                    QueryTextDisplay = "pump ",
                     IcoPath = IconPath,
                     Title = "<beginning> <first> <second> <third> <final>",
                     SubTitle = "Enter all 5 values to calculate the actions...",
-                    Action = _ => true,
-                    ContextData = search,
+                    Action = _ =>
+                    {
+                        Context.API.ChangeQuery($"{query.ActionKeyword} pump ", true);
+                        return false;
+                    },
                 },
             ];
+
+            var remaining = search[4..].Trim();
+            var parts = remaining.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 5)
+            {
+                var beginning = int.TryParse(parts[0], out var _b) ? _b : 0;
+                var first = int.TryParse(parts[1], out var _f) ? _f : 0;
+                var second = int.TryParse(parts[2], out var _s) ? _s : 0;
+                var third = int.TryParse(parts[3], out var _t) ? _t : 0;
+                var final = int.TryParse(parts[4], out var _l) ? _l : 0;
+
+                var actions = PumpsPuzzleSolver.Solve(beginning, first, second, third, final);
+
+                if (actions != null)
+                {
+                    var text = "";
+                    text += $"{beginning}    ";
+                    text += $"{PumpsPuzzleSolver.ToText(actions.First)} {first}    ";
+                    text += $"{PumpsPuzzleSolver.ToText(actions.Second)} {second}    ";
+                    text += $"{PumpsPuzzleSolver.ToText(actions.Third)} {third}    ";
+                    text += $" = {final}";
+
+                    results.Insert(
+                        0,
+                        new Result
+                        {
+                            DisableUsageBasedScoring = true,
+                            QueryTextDisplay = "pump ",
+                            IcoPath = IconPath,
+                            Title = text,
+                            SubTitle = $"Total actions: {actions.ActionCount}",
+                            Action = _ =>
+                            {
+                                Context.API.ChangeQuery($"{query.ActionKeyword} pump ", true);
+                                return false;
+                            },
+                        }
+                    );
+                }
+                else
+                {
+                    results.Insert(
+                        0,
+                        new Result
+                        {
+                            DisableUsageBasedScoring = true,
+                            QueryTextDisplay = "pump ",
+                            IcoPath = IconPath,
+                            Title = "No solution found",
+                            SubTitle = "Try different values",
+                            Action = _ =>
+                            {
+                                Context.API.ChangeQuery($"{query.ActionKeyword} pump ", true);
+                                return false;
+                            },
+                        }
+                    );
+                }
+            }
+
+            return results;
         }
 
         return [];
