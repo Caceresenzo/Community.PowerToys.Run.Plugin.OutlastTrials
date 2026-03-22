@@ -10,6 +10,8 @@ namespace Community.PowerToys.Run.Plugin.OutlastTrials;
 /// </summary>
 public class Main : IPlugin, IContextMenu, IDisposable
 {
+    public static readonly string GAME_PROCESS_NAME = "TOTClient-Win64-Shipping";
+
     /// <summary>
     /// ID of the plugin.
     /// </summary>
@@ -96,6 +98,8 @@ public class Main : IPlugin, IContextMenu, IDisposable
 
                             _currentOverlayManager.Sync(OverlayManager.ShockPhase.Playing);
 
+                            FocusGame();
+
                             return true;
                         },
                     },
@@ -113,6 +117,8 @@ public class Main : IPlugin, IContextMenu, IDisposable
 
                             _currentOverlayManager.Sync(OverlayManager.ShockPhase.Hiding);
 
+                            FocusGame();
+
                             return true;
                         },
                     },
@@ -129,6 +135,8 @@ public class Main : IPlugin, IContextMenu, IDisposable
                             _currentOverlayManager = null;
 
                             Context.API.ChangeQuery(query.RawQuery, true);
+
+                            FocusGame();
 
                             return true;
                         },
@@ -155,6 +163,8 @@ public class Main : IPlugin, IContextMenu, IDisposable
                             _currentOverlayManager.Show();
 
                             Context.API.ChangeQuery(query.RawQuery, true);
+
+                            FocusGame();
 
                             return true;
                         },
@@ -248,6 +258,25 @@ public class Main : IPlugin, IContextMenu, IDisposable
         }
 
         return [];
+    }
+
+    public void FocusGame()
+    {
+        bool focused = false;
+        for (int i = 0; i < 30; i++)
+        {
+            var result = Native.FocusProcess(GAME_PROCESS_NAME);
+            if (result != Native.FocusResult.Failed)
+            {
+                focused = true;
+                break;
+            }
+
+            System.Threading.Thread.Sleep(50);
+        }
+
+        if (!focused)
+            Logger.LogInfo("Failed to focus the game window.");
     }
 
     /// <summary>
