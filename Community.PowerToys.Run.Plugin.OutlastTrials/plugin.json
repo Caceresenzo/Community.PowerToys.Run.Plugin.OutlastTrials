@@ -4,7 +4,7 @@
   "IsGlobal": false,
   "Name": "Outlast Trials Utilities",
   "Author": "Enzo CACERES",
-  "Version": "0.0.0",
+  "Version": "1.0.0",
   "Language": "csharp",
   "Website": "https://github.com/Caceresenzo/Community.PowerToys.Run.Plugin.OutlastTrials",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.OutlastTrials.dll",
