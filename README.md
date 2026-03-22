@@ -41,7 +41,7 @@ The program never reads or writes to the game's memory. Users must properly sync
 
 ## Pump Calculator
 
-Solve the small pumps puzzle quickly in the trial "Kill the Politician".
+Solve the small pumps puzzle quickly in the trial ["Kill the Politician"](https://outlast.fandom.com/wiki/Kill_the_Politician):
 
 ![Demo](./documentation/pump.png)
 
