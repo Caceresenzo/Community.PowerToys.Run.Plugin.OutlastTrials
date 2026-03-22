@@ -23,5 +23,11 @@ The program never reads or writes to the game's memory. Users must properly sync
 
 # Pump Calculator
 
-> [!NOTE]
-> Work in progress...
+Solve the small pumps puzzle quickly in the trial "Kill the Politician".
+
+![Demo](./documentation/pump.png)
+
+## Controls
+
+- Validating any action resets the inputs for a quick retry.
+- The calculator cannot start unless all values are numbers.
