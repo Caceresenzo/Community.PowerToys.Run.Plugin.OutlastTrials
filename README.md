@@ -35,9 +35,12 @@ Use the on-screen indicator to keep track of the Toxic Shock and Cold Snap cycle
 
 ### Is it cheating?
 
-**No.**
+**No.** (I think?)
 
-The program never reads or writes to the game's memory. Users must properly synchronize the in-game internal timer with the on-screen timer.
+The program never reads or writes to the game's memory. Users must properly synchronize the in-game internal timer with the on-screen timer. <br />
+**It's essentially like setting an alarm on your phone[^1] to ring every two minutes.**
+
+[^1]: That's really how I used to do it before creating this tool.
 
 ## Pump Calculator
 
