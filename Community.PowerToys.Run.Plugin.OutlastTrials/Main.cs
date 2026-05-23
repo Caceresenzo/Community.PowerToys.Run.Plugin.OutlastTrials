@@ -77,11 +77,88 @@ public class Main : IPlugin, IContextMenu, IDisposable
             ];
         }
 
+        var isRunning = _currentOverlayManager != null;
+        if (isRunning && search.StartsWith("shock sync delta"))
+        {
+            var parts = search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var delta =
+                (
+                    parts.Length == 4
+                    && int.TryParse(
+                        parts[3].StartsWith('+') ? parts[3][1..] : parts[3],
+                        out var parsedDelta
+                    )
+                )
+                    ? parsedDelta
+                    : 1;
+
+            var absoluteDelta = Math.Abs(delta);
+            var pluralSecond = absoluteDelta > 1 ? "s" : "";
+
+            return
+            [
+                new Result
+                {
+                    DisableUsageBasedScoring = true,
+                    QueryTextDisplay = $"shock sync delta -{absoluteDelta}",
+                    IcoPath = IconPath,
+                    Title = $"Subtract {absoluteDelta} second{pluralSecond}",
+                    SubTitle =
+                        $"The cycle came too slowly? Decrease cycle by {absoluteDelta} second{pluralSecond}",
+                    Action = _ =>
+                    {
+                        if (_currentOverlayManager == null)
+                            return false;
+
+                        _currentOverlayManager.Sync(-absoluteDelta);
+
+                        FocusGame();
+
+                        return true;
+                    },
+                },
+                new Result
+                {
+                    DisableUsageBasedScoring = true,
+                    QueryTextDisplay = $"shock sync delta +{absoluteDelta}",
+                    IcoPath = IconPath,
+                    Title = $"Add {absoluteDelta} second{pluralSecond}",
+                    SubTitle =
+                        $"The cycle came too quickly? Increase cycle by {absoluteDelta} second{pluralSecond}",
+                    Action = _ =>
+                    {
+                        if (_currentOverlayManager == null)
+                            return false;
+
+                        _currentOverlayManager.Sync(+absoluteDelta);
+
+                        FocusGame();
+
+                        return true;
+                    },
+                },
+                new Result
+                {
+                    DisableUsageBasedScoring = true,
+                    QueryTextDisplay = "shock",
+                    IcoPath = IconPath,
+                    Title = "Go back",
+                    SubTitle = "Go back to the previous menu",
+                    Action = _ =>
+                    {
+                        Context.API.ChangeQuery($"{query.ActionKeyword} shock ", true);
+                        return false;
+                    },
+                },
+            ];
+        }
+
         if (search.StartsWith("shock"))
         {
             List<Result> results = [];
 
-            if (_currentOverlayManager != null)
+            if (isRunning)
             {
                 results.AddRange([
                     new Result
@@ -120,6 +197,22 @@ public class Main : IPlugin, IContextMenu, IDisposable
                             FocusGame();
 
                             return true;
+                        },
+                    },
+                    new Result
+                    {
+                        DisableUsageBasedScoring = true,
+                        QueryTextDisplay = "shock sync delta +1",
+                        IcoPath = IconPath,
+                        Title = "Synchronize with +/- seconds",
+                        SubTitle = "Add or subtract seconds from the cycle",
+                        Action = _ =>
+                        {
+                            Context.API.ChangeQuery(
+                                $"{query.ActionKeyword} shock sync delta +1",
+                                true
+                            );
+                            return false;
                         },
                     },
                     new Result

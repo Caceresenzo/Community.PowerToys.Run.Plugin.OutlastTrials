@@ -30,6 +30,7 @@ Use the on-screen indicator to keep track of the Toxic Shock and Cold Snap cycle
 
 - **Synchronize at Cycle**: Reset the timer to the length of the cycle. This must be done when the voice says "Ended" and before you leave your hiding place.
 - **Synchronize at Callout**: Reset the timer to the beginning of the hiding time. This must be done when the voice says the name of the shock, such as "Toxic" or "Cold."
+- **Synchronize with +/- seconds**: Add or remove a few seconds quickly to align the timer more precisely.
 - **Remove the timer**: Disable and remove the timer. This must be used when a therapy ends.
 - **Cold Snap** or **Toxic Shock**: Restart the timer using the new times.
 

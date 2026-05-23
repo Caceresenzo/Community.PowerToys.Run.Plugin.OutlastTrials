@@ -159,6 +159,13 @@ public class OverlayManager : IDisposable
         Update();
     }
 
+    public void Sync(int deltaSeconds)
+    {
+        _remainingSeconds = Math.Max(0, _remainingSeconds + deltaSeconds);
+
+        Update();
+    }
+
     private void NotifyStop()
     {
         lock (_lock)
